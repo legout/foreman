@@ -1,0 +1,76 @@
+{
+  "description": "ChatGPT subscription only (openai-codex). One family: reviewer uses a different tier than the builder.",
+  "cli": "pi",
+  "roles": {
+    "foreman": [
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "high"
+      }
+    ],
+    "builder-quick": [
+      {
+        "model": "openai-codex/gpt-6-luna",
+        "thinking": "low"
+      }
+    ],
+    "builder": [
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "high"
+      }
+    ],
+    "builder-deep": [
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "high"
+      }
+    ],
+    "builder-ui": [
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "high"
+      }
+    ],
+    "writer": [
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "medium"
+      }
+    ],
+    "tester": [
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "high"
+      }
+    ],
+    "reviewer": [
+      {
+        "model": "openai-codex/gpt-6.2-astra",
+        "thinking": "xhigh"
+      },
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "xhigh"
+      }
+    ],
+    "verifier": [
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "medium"
+      }
+    ],
+    "scout": [
+      {
+        "model": "openai-codex/gpt-6-luna",
+        "thinking": "low"
+      }
+    ],
+    "oracle": [
+      {
+        "model": "openai-codex/gpt-6.2-astra",
+        "thinking": "xhigh"
+      }
+    ]
+  }
+}

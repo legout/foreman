@@ -2,59 +2,65 @@
 
 ## Worktree
 
-A writer gets a new branch from `origin/main`:
-
 ```sh
 WT=${XDG_STATE_HOME:-$HOME/.local/state}/worktrees/<repo>/<n>-<slug>
 git fetch origin && git worktree add -b issue/<n>-<slug> "$WT" origin/main
 ```
 
-- Give each writer its own worktree; never put two writers in one.
-- A tester and a builder on the same issue share one branch, one after the other: the builder starts only after the tester has reported.
-- Reviewers and verifiers each get a detached worktree at the PR head: `git worktree add --detach "$WT-r" <head-sha>`.
+- **Writers:** one writer per worktree. A tester and then a builder may share one branch, but only one after the other.
+- **Reviewers and verifiers:** create a detached worktree at the PR head with `git worktree add --detach "$WT-r" <head-sha>`.
 
 ## Launch
 
-Start the worker in a new tab of your space. Pass the command as separate arguments with absolute paths: a quoted command string runs under `sh` without your `PATH`.
+Start every worker in a new tab of your space as an interactive agent, never in one-shot print mode.
+
+- Pass the command as separate argv arguments, using the absolute path from `command -v <cli>`. A single quoted string runs under `sh` without your `PATH`.
+- Build `<cli-args>` from the table below. `<m>` is the profile model, `<t>` is its thinking level, and `<skills>` is the role's skill list.
 
 ```sh
-hc run --bg --json --name <role>-<n> --cwd "$WT" --label herdr.space=<space> \
-  /home/volker/.pi/agent/bin/pi --name <role>-<n> --model <provider/model> --thinking <level> \
-  --no-skills --skill ~/.agents/skills/agent-guardrails [--skill ...] [--exclude-tools edit,write]
+hc run --bg --json --name <role>-<n> --cwd "$WT" --label herdr.space=<space> <abs-cli-path> <cli-args>
 hc wait <role>-<n>
-hc send <role>-<n> "Read and execute <brief-path>"
+hc send <role>-<n> "Read and execute <brief-path>. Report with: hc send $HC_TERMINAL_ID '<message>'"
 ```
 
-- Wait until the worker is idle before you send the brief: a prompt passed at launch can be dropped.
-- After sending, run `hc read <role>-<n>` once to confirm it started the task.
-- If the JSON from `hc run` reports a failed send, read the terminal before you resend anything.
+| CLI | Args | Skills scoped to the role | Read-only roles add |
+|---|---|---|---|
+| `pi` | `--name <role>-<n> --model <m> --thinking <t>` | `--no-skills --skill ~/.agents/skills/<s>` for each skill | `--exclude-tools edit,write` |
+| `omp` | `--model <m> --thinking <t>` | `--skills <s1>,<s2>` | `--tools read,grep,find,bash` |
+| `claude` | `--model <m> --effort <t> --name <role>-<n> --permission-mode acceptEdits` | none; the brief names the skills to load | `--disallowed-tools Edit,Write` |
+| `codex` | `-m <m> -c model_reasoning_effort=<t> -a never -s workspace-write` | none; the brief names the skills | `-s read-only` instead of `workspace-write` |
+| `opencode` | `-m <m>` | none; the brief names the skills | `--agent plan` |
+| `hermes` | `chat -m <m> --reasoning <t> -s <s1> -s <s2> --yolo` | `-s` per skill | none; the brief says read-only |
+
+- **`claude` and `codex` thinking levels:** map `max` and `xhigh` to `xhigh`, and `low`, `medium`, `high` to themselves.
+- **Before the first dispatch with a new CLI or model:** check that it starts in a scratch tab, then kill that tab.
+- **Sending the brief:** wait until the worker is idle before you send it, because a prompt sent during launch can be dropped. If `first_message.sent` is false, run `hc read` before you resend anything.
+- **After sending:** run `hc read` once to confirm the worker picked up the task.
 
 ## Brief
 
-Write each brief to `${XDG_STATE_HOME:-$HOME/.local/state}/factory/<repo>/<n>-<role>.md`. Never put it inside the worktree. A fresh session knows only what the brief says, so fill in every field:
+Write each brief to `${XDG_STATE_HOME:-$HOME/.local/state}/factory/<repo>/<n>-<role>.md`, never inside the worktree. Fill in every field:
 
 ```text
-ROLE: <role>   ISSUE: #<n> <url>   LANE: <lane>
+ROLE: <role>   ISSUE: #<n> <url>   LANE: <lane>   PARENT: <your $HC_TERMINAL_ID>
 WORKTREE: <path>  BRANCH: issue/<n>-<slug>  BASE: <sha>
+SKILLS: load <skills> before starting.
 GOAL: <one line>
-ACCEPTANCE CRITERIA: <checklist copied from the issue>
+ACCEPTANCE CRITERIA: <checklist from the issue>
 SCOPE: may edit <files/modules>; must not touch <...>.  NON-GOALS: <...>
 VALIDATION: <failing test(s) for AC x,y first | existing check <cmd> | no-new-test: <why>>; focused cmd: <cmd>; nothing broader.
 DONE WHEN: <criteria met + evidence>; then follow your role section in AGENTS.md.
-QUESTIONS: intercom ask "foreman"; keep doing other safe work meanwhile.
 ```
 
-For a fix pass, send the accepted findings and the same VALIDATION line to the worker that is already running.
+For a fix pass, send the accepted findings and the same VALIDATION line to the running worker.
 
 ## Reviewer brief
 
-Paste the whole **Reviewer Dispatch** block from `agent-guardrails` into the brief and fill in:
+Paste the full **Reviewer Dispatch** block from `agent-guardrails` into the brief, filled in with:
 
-- `<base>..<head>`: the PR's base and head;
+- the PR's base..head;
 - the acceptance criteria;
-- the written rules: `AGENTS.md` plus the cited specs and ADRs;
+- the written rules: `AGENTS.md` plus the specs and ADRs it cites;
 - the real callers, inputs, and environment.
 
-Do not just link the block.
-
-For a recheck, replace its first line with the skill's re-review line and name the prior head and the fix head.
+For a recheck, replace the block's first line with the skill's re-review line, naming the prior head and the fix head.

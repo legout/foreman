@@ -1,24 +1,40 @@
-# Roles
+# Roles and profiles
 
-Use the first available entry in each role's model chain. If you fall back to a later entry, say so in the issue comment.
+## Profiles
 
-A reviewer or tester must come from a different model family than the builder whose work it checks.
+A profile maps each role to an ordered chain of `{model, thinking}` entries. Use the first entry that is available; if you fall back, say so in the issue comment.
 
-| Role | Lane / label | Writes | Model chain | Skills |
-|---|---|---|---|---|
-| `builder-quick` | quick | code | `zai/glm-5.3-flash:low` → `openai-codex/gpt-6-luna:low` → `claude-code/claude-haiku-5-5:low` | guardrails |
-| `builder` | standard | code + tests | `claude-code/claude-sonnet-5-5:high` → `zai/glm-5.3:high` → `openai-codex/gpt-6.1-terra:high` | guardrails, tdd, systematic-debugging |
-| `builder-deep` | deep | code | `claude-code/claude-opus-5-5:high` → `openai-codex/gpt-6.2-sol:high` | guardrails, tdd, systematic-debugging |
-| `builder-ui` | `ui` | code | `claude-code/claude-fable-5-2:high` → `claude-code/claude-opus-5-5:high` | guardrails, tdd, impeccable |
-| `writer` | `docs` | docs | `claude-code/claude-sonnet-5-5:medium` → `openai-codex/gpt-6.1-terra:medium` | guardrails, documentation-writer |
-| `tester` | deep | tests | `openai-codex/gpt-6.1-terra:high` → `zai/glm-5.3:high` | guardrails, tdd |
-| `reviewer` | risk trigger, deep | — | `openai-codex/gpt-6.2-sol:xhigh` → `kimi-coding/k3.1-pro:max` → `claude-code/claude-opus-5-5:xhigh` | guardrails |
-| `verifier` | deep | — | `zai/glm-5.3:medium` → `openai-codex/gpt-6.1-terra:medium` | guardrails, project `verify-*` recipe |
-| `scout` | spike | — | `zai/glm-5.3-flash:low` | research |
-| `oracle` | spike, stuck | — | `openai-codex/gpt-6.2-astra:xhigh` → `claude-code/claude-opus-5-5:xhigh` | guardrails |
+| Profile | For |
+|---|---|
+| `mixed` | Claude, ChatGPT, GLM, and Kimi subscriptions. Reviewers come from a different family than builders. |
+| `chatgpt` | ChatGPT only. One family, so the reviewer uses a higher tier than the builder. |
+| `claude` | Claude only. One family, so the reviewer uses a higher tier than the builder. |
+| `open-weights` | GLM, Kimi, DeepSeek, and MiniMax, through direct APIs, CommandCode, or OpenCode Go. |
 
-**Loading skills.** Start workers with `--no-skills` and pass one `--skill ~/.agents/skills/<name>` per skill listed for the role. A worker then carries only the skill descriptions for its role, and off-role skills cannot trigger.
+How a profile is chosen and applied:
 
-**Read-only roles.** Add `--exclude-tools edit,write` for every role whose Writes column is `—`. Reviewers and verifiers can still use `gh` and `git` through bash, so keep them in a detached worktree.
+- The repository picks its profile in `.foreman/profile`, which contains one line with the profile name.
+- To customise a profile, copy it to `.foreman/<name>.json`. A copy there takes precedence over the built-in profile.
+- `"cli"` sets the worker CLI for the whole profile (`pi` by default). An entry can override it with its own `"cli"`.
+- Model IDs are written as `provider/model` for `pi` and `omp`. The other CLIs drop the provider prefix (see [dispatch.md](dispatch.md)).
 
-**Context gathering inside a session.** Use Pi's own `pi-subagents` (scout/researcher) for this. Never start an extra Herdr session just to gather context.
+## Roles
+
+| Role | Lane or label | Writes | Skills |
+|---|---|---|---|
+| `builder-quick` | quick | code | guardrails |
+| `builder` | standard | code and tests | guardrails, tdd, systematic-debugging |
+| `builder-deep` | deep | code | guardrails, tdd, systematic-debugging |
+| `builder-ui` | `ui` | code | guardrails, tdd, impeccable |
+| `writer` | `docs` | docs | guardrails, documentation-writer |
+| `tester` | deep | tests | guardrails, tdd |
+| `reviewer` | risk trigger, deep | — | guardrails |
+| `verifier` | deep | — | guardrails, the project's `verify-*` recipe |
+| `scout` | spike | — | research |
+| `oracle` | spike, stuck | — | guardrails |
+
+Each shipped profile keeps the reviewer on a model that no builder uses, and keeps the tester on a different model from `builder-deep`. When you edit a profile, keep both properties, and prefer a different model family.
+
+Roles marked `—` are read-only. Launch them with the CLI's read-only switch (see [dispatch.md](dispatch.md)), each in its own detached worktree.
+
+Gather context inside a worker with that CLI's own subagents. Never open an extra Herdr session just to gather context.

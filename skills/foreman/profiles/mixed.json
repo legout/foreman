@@ -1,0 +1,128 @@
+{
+  "description": "Claude + ChatGPT + GLM + Kimi subscriptions (the author's setup). Reviewer/tester from a different family than the builder.",
+  "cli": "pi",
+  "roles": {
+    "foreman": [
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      },
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "high"
+      }
+    ],
+    "builder-quick": [
+      {
+        "model": "zai/glm-5.3-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "openai-codex/gpt-6-luna",
+        "thinking": "low"
+      },
+      {
+        "model": "claude-code/claude-haiku-5-5",
+        "thinking": "low"
+      }
+    ],
+    "builder": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "high"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "high"
+      },
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "high"
+      }
+    ],
+    "builder-deep": [
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      },
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "high"
+      }
+    ],
+    "builder-ui": [
+      {
+        "model": "claude-code/claude-fable-5-2",
+        "thinking": "high"
+      },
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      }
+    ],
+    "writer": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "medium"
+      },
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "medium"
+      }
+    ],
+    "tester": [
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "high"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "high"
+      }
+    ],
+    "reviewer": [
+      {
+        "model": "openai-codex/gpt-6.2-sol",
+        "thinking": "xhigh"
+      },
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "max"
+      },
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "xhigh"
+      }
+    ],
+    "verifier": [
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "medium"
+      },
+      {
+        "model": "openai-codex/gpt-6.1-terra",
+        "thinking": "medium"
+      }
+    ],
+    "scout": [
+      {
+        "model": "zai/glm-5.3-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "openai-codex/gpt-6-luna",
+        "thinking": "low"
+      }
+    ],
+    "oracle": [
+      {
+        "model": "openai-codex/gpt-6.2-astra",
+        "thinking": "xhigh"
+      },
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "xhigh"
+      }
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "description": "GLM (Z.ai), Kimi, DeepSeek, MiniMax via direct providers, CommandCode (command-code/...) or OpenCode Go. Edit the provider prefixes to the ones you have.",
+  "cli": "pi",
+  "roles": {
+    "foreman": [
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "high"
+      },
+      {
+        "model": "zai/glm-5.4",
+        "thinking": "high"
+      }
+    ],
+    "builder-quick": [
+      {
+        "model": "zai/glm-5.3-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "command-code/deepseek/deepseek-v4.1-flash-fast",
+        "thinking": "low"
+      },
+      {
+        "model": "minimax/MiniMax-M3.1-Flash",
+        "thinking": "low"
+      }
+    ],
+    "builder": [
+      {
+        "model": "zai/glm-5.4",
+        "thinking": "high"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "high"
+      },
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "high"
+      }
+    ],
+    "builder-deep": [
+      {
+        "model": "zai/glm-5.4",
+        "thinking": "max"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "max"
+      }
+    ],
+    "builder-ui": [
+      {
+        "model": "zai/glm-5.4",
+        "thinking": "high"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "high"
+      }
+    ],
+    "writer": [
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "medium"
+      },
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "medium"
+      }
+    ],
+    "tester": [
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "high"
+      },
+      {
+        "model": "minimax/MiniMax-M3.1-Flash",
+        "thinking": "high"
+      }
+    ],
+    "reviewer": [
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "max"
+      },
+      {
+        "model": "command-code/deepseek/deepseek-v4.1-flash-fast",
+        "thinking": "high"
+      }
+    ],
+    "verifier": [
+      {
+        "model": "zai/glm-5.3",
+        "thinking": "medium"
+      },
+      {
+        "model": "command-code/deepseek/deepseek-v4.1-flash-fast",
+        "thinking": "medium"
+      }
+    ],
+    "scout": [
+      {
+        "model": "zai/glm-5.3-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "command-code/deepseek/deepseek-v4.1-flash-fast",
+        "thinking": "low"
+      }
+    ],
+    "oracle": [
+      {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "max"
+      },
+      {
+        "model": "zai/glm-5.4",
+        "thinking": "max"
+      }
+    ]
+  }
+}

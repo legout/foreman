@@ -4,9 +4,11 @@ One **foreman** Pi session runs this project. It triages GitHub issues, routes e
 
 ## Project
 
-- Repository: `<owner/repo>` (TODO). The default branch is `main`.
-- Setup command: `<cmd>` (TODO). Focused test command: `<cmd> <path>` (TODO). Full gate (CI): `<cmd>` (TODO).
-- Sources of truth: specs and ADRs in `project/`, terminology in `CONTEXT.md`. If they conflict with each other or with an issue, stop and ask the foreman.
+- Repository: `{{REPO}}`. Default branch: `{{BRANCH}}`.
+- Setup: `{{SETUP}}`
+- Focused test: `{{TEST}}`
+- Full gate (CI): `{{GATE}}`
+- Sources of truth: {{SOURCES}}. If they conflict with each other or with an issue, stop and ask the foreman.
 
 ## Authority (owner grant)
 
@@ -55,16 +57,17 @@ One issue produces one branch (`issue/<n>-<slug>`) and one PR, whose body says `
   - before you add a test, extend an existing one if it fits.
 - Run only the checks your brief assigns. Do not rerun a check that is already green unless something relevant changed.
 - Run slow commands (full suites, builds, `gh run watch`) in a background terminal: start them with `hc run --bg`, then `hc wait`. Never sleep-poll.
+- **Talking to the foreman**: run `hc send <PARENT> "<message>"`, where `PARENT` comes from your brief. Use it for questions, `DONE`, `BLOCKED`, `REVIEW` and `VERIFY`.
 - Workers are child sessions. Do not run `memo` or write shared memory, wiki, or knowledge notes; global "parent session" rules do not apply to you.
 - Workers never start other Herdr sessions, merge, push to `main`, edit labels, or close issues.
 
 ## Writing workers (builder, tester, writer)
 
-1. **Preflight before any write.** Check that your cwd, branch, and base match the brief. If anything differs, run `intercom ask foreman` and stop.
+1. **Preflight before any write.** Check that your cwd, branch, and base match the brief. If anything differs, report it to the foreman (see **Talking to the foreman**) and stop.
 2. Do your role's part:
    - `tester`: write tests only, and commit them red with a run that shows them failing for the right reason.
    - `builder`: red → green → refactor. In the deep lane, the tester's tests are the oracle: never weaken them. If you think a test is wrong, ask the foreman.
-3. For any decision the brief does not cover (scope, an interface, an ambiguous acceptance criterion), run `intercom ask foreman`. Never guess an owner decision.
+3. For any decision the brief does not cover (scope, an interface, an ambiguous acceptance criterion), ask the foreman and wait for the answer. Never guess an owner decision.
 4. Commit in small steps with messages like `<type>: <what> (#<n>)`, then push the branch.
    - Builders and writers open the PR with `gh pr create --fill --body "Closes #<n>"`.
    - Testers push only.
@@ -73,9 +76,9 @@ One issue produces one branch (`issue/<n>-<slug>`) and one PR, whose body says `
    - each acceptance criterion marked ✅ with evidence, or ❌ with the reason;
    - any checks you skipped;
    - one line of extra ideas.
-6. Run `intercom send foreman "DONE #<n> <url>"`, or `"BLOCKED #<n> <question>"` if you are stuck. Then stay idle for a fix pass.
+6. Send `DONE #<n> <url>` to the foreman, or `BLOCKED #<n> <question>` if you are stuck. Then stay idle for a fix pass.
 
 ## Read-only workers (reviewer, verifier)
 
-- **Reviewer**: apply the dispatch contract pasted in your brief. Post one PR comment that ends with the verdict `pass` or `fix-first`. Then run `intercom send foreman "REVIEW #<n> <verdict>"`. Never edit files or start a recheck.
-- **Verifier**: build the artifact and drive the issue's user journey through the real CLI or browser. Post what you observed against each acceptance criterion. Then run `intercom send foreman "VERIFY #<n> pass|fail"`. Report a failure; do not fix it.
+- **Reviewer**: apply the dispatch contract pasted in your brief. Post one PR comment that ends with the verdict `pass` or `fix-first`. Then send `REVIEW #<n> <verdict>` to the foreman. Never edit files or start a recheck.
+- **Verifier**: build the artifact and drive the issue's user journey through the real CLI or browser. Post what you observed against each acceptance criterion. Then send `VERIFY #<n> pass|fail` to the foreman. Report a failure; do not fix it.

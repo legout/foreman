@@ -1,0 +1,80 @@
+{
+  "description": "Claude subscription only (claude-code provider in Pi, or the claude CLI). One family: reviewer uses a different tier than the builder.",
+  "cli": "pi",
+  "roles": {
+    "foreman": [
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      }
+    ],
+    "builder-quick": [
+      {
+        "model": "claude-code/claude-haiku-5-5",
+        "thinking": "low"
+      }
+    ],
+    "builder": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "high"
+      }
+    ],
+    "builder-deep": [
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      }
+    ],
+    "builder-ui": [
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "high"
+      }
+    ],
+    "writer": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "medium"
+      }
+    ],
+    "tester": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "xhigh"
+      }
+    ],
+    "reviewer": [
+      {
+        "model": "claude-code/claude-fable-5-2",
+        "thinking": "xhigh"
+      },
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "xhigh"
+      }
+    ],
+    "verifier": [
+      {
+        "model": "claude-code/claude-sonnet-5-5",
+        "thinking": "medium"
+      }
+    ],
+    "scout": [
+      {
+        "model": "claude-code/claude-haiku-5-5",
+        "thinking": "low"
+      }
+    ],
+    "oracle": [
+      {
+        "model": "claude-code/claude-fable-5-2",
+        "thinking": "xhigh"
+      },
+      {
+        "model": "claude-code/claude-opus-5-5",
+        "thinking": "xhigh"
+      }
+    ]
+  }
+}

@@ -1,33 +1,43 @@
 #!/usr/bin/env bash
-# Check that this machine can run the factory. Exit 1 on any failure.
+# Check that this machine can run the factory. Usage: doctor.sh [agents, default pi]. Exit 1 on failure.
 set -uo pipefail
+here=$(cd "$(dirname "$0")" && pwd)
+agents=${1:-pi}
 fail=0
-ok()  { printf '  ok    %s\n' "$1"; }
-bad() { printf '  FAIL  %s -> %s\n' "$1" "$2"; fail=1; }
-chk() { if eval "$2" >/dev/null 2>&1; then ok "$1"; else bad "$1" "$3"; fi; }
+ok()   { printf '  ok    %s\n' "$1"; }
+bad()  { printf '  FAIL  %s -> %s\n' "$1" "$2"; fail=1; }
+warn() { printf '  warn  %s\n' "$1"; }
+chk()  { if eval "$2" >/dev/null 2>&1; then ok "$1"; else bad "$1" "$3"; fi; }
 
 echo "tools"
-chk "gh authenticated"   "gh auth status"           "gh auth login"
-chk "herdr-core running" "hc ls"                    "start the Herdr app"
-chk "pi"                 "pi --version"             "install pi"
+chk "gh authenticated"   "gh auth status" "gh auth login"
+chk "herdr-core running" "hc ls"          "start the Herdr app"
 
-echo "pi packages"
-list=$(pi list 2>/dev/null)
-for p in pi-intercom pi-subagents foreman; do
-  grep -q "$p" <<<"$list" && ok "$p" || bad "$p" "re-run setup.sh"
-done
-
-echo "skills"
-for s in agent-guardrails tdd systematic-debugging impeccable documentation-writer research \
+echo "skills (~/.agents/skills)"
+for s in foreman agent-guardrails tdd systematic-debugging impeccable documentation-writer research \
          shape-design planning-contract write-implementation-plan deslop test-diet project-verification; do
   [ -f "$HOME/.agents/skills/$s/SKILL.md" ] && ok "$s" || bad "$s" "re-run setup.sh"
 done
 
-echo "models (first entry of each role chain; fallbacks are fine)"
-models=$(pi --list-models 2>/dev/null)
-for m in "zai glm-5.3-flash" "claude-code claude-sonnet-5-5" "claude-code claude-opus-5-5" \
-         "openai-codex gpt-6.2-sol" "openai-codex gpt-6.1-terra"; do
-  grep -qE "^${m% *} +${m#* } " <<<"$models" && ok "$m" || printf '  warn  %s unavailable; edit references/roles.md\n' "$m"
+echo "agent CLIs"
+IFS=, read -ra list <<<"$agents"
+for a in "${list[@]}"; do
+  cli=${a%-code}; cli=${cli%-agent}       # claude-code -> claude, hermes-agent -> hermes
+  command -v "$cli" >/dev/null && ok "$cli" || bad "$cli" "install it or drop it from --agents"
 done
 
+if [[ ",$agents," == *,pi,* ]] && command -v pi >/dev/null; then
+  echo "pi models of profile ${FOREMAN_PROFILE:-mixed} (first entry per role; fallbacks are fine)"
+  models=$(pi --list-models 2>/dev/null | awk 'NR>1{print $1"/"$2}')
+  python3 - "$here/skills/foreman/profiles/${FOREMAN_PROFILE:-mixed}.json" "$models" <<'PY' || fail=1
+import json, sys
+have = set(sys.argv[2].split())
+roles = json.load(open(sys.argv[1]))["roles"]
+for role, chain in roles.items():
+    first = chain[0]["model"]
+    if first in have: print(f"  ok    {role}: {first}")
+    elif any(e["model"] in have for e in chain): print(f"  warn  {role}: {first} missing, falls back")
+    else: print(f"  FAIL  {role}: no model of its chain in pi"); sys.exit(1)
+PY
+fi
 exit $fail
