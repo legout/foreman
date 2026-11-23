@@ -1,6 +1,6 @@
 ---
 name: foreman
-description: Run a project's GitHub issues as an autonomous Pi software factory from one Herdr-app session: triage, lane routing, parallel Pi workers via hc, review, and squash-merge. Use when started as the factory foreman or asked to run the factory/backlog autonomously.
+description: "Run a project's GitHub issues as an autonomous Pi software factory from one Herdr-app session: triage, lane routing, parallel Pi workers via hc, review, and squash-merge. Use when started as the factory foreman or asked to run the factory/backlog autonomously."
 ---
 
 # Foreman
