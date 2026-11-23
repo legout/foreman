@@ -2,7 +2,13 @@
 
 foreman is an autonomous software factory for coding agents. You plan the work as GitHub issues. One **foreman** session works through those issues: it starts agent workers in parallel Herdr-app tabs, sends each issue down a cheap or a thorough lane, and squash-merges a PR once the evidence holds up.
 
-It runs with Pi, Oh My Pi, Claude Code, Codex, OpenCode and Hermes. The foreman and the workers can each use a different one of these CLIs.
+It runs with Pi, Oh My Pi, Claude Code, Codex, OpenCode and Hermes, on three worker hosts:
+
+- Herdr (`hc`) tabs;
+- Paseo agents;
+- BB threads.
+
+The foreman and the workers can each use a different CLI. The foreman picks the host it detects in its environment.
 
 ## Setup (once per machine)
 
@@ -14,7 +20,7 @@ git clone https://github.com/legout/foreman
 
 You need these installed first:
 
-- `hc` (herdr-core), with the Herdr app running;
+- one worker host: `hc` (herdr-core, with the Herdr app running), the Paseo daemon, or BB;
 - `gh`, already authenticated;
 - Node.js/`npx` and `git`;
 - at least one agent CLI.
@@ -56,7 +62,7 @@ To customize a profile, copy it from `skills/foreman/profiles/` to `.foreman/<na
 | 1. Shape | "shape-design …" | shape-design, grilling, domain-modeling, planning-contract |
 | 2. Plan | "write-implementation-plan …" | write-implementation-plan, planning-contract |
 | 3. Issues | "factory: plan to issues `<plan>`" (`/to-issues`). Each plan task becomes one issue, and its risk class sets the lane. You approve the list first. | foreman |
-| 4. Build | In a Herdr tab: "run the factory" (`/factory-run`) | foreman, plus for workers: agent-guardrails, tdd, systematic-debugging, impeccable, documentation-writer, research |
+| 4. Build | In a Herdr tab, a Paseo agent, or a BB thread: "run the factory" (`/factory-run`) | foreman, plus for workers: agent-guardrails, tdd, systematic-debugging, impeccable, documentation-writer, research |
 | 5. Upkeep | "factory upkeep deslop" (`/factory-upkeep`). Proposals you approve become issues. | deslop, test-diet |
 | Once | "project-verification": writes the `verify-*` recipe that the deep-lane verifier follows | project-verification |
 | Release | "make-release". The factory never releases. | make-release |
@@ -66,23 +72,25 @@ You own steps 1–3 and 5, and you approve every spec, plan, issue list and clea
 ## How the factory runs
 
 ```
-GitHub issues ──▶ foreman (any CLI, Herdr tab)
+GitHub issues ──▶ foreman (any CLI, on Herdr | Paseo | BB)
                     │ triage → lane: quick | standard | deep | spike
-                    │ hc run --bg  (one tab + worktree per worker, CLI/model from the profile)
+                    │ host: place (isolated worktree) + start (CLI/model from profile)
                     ▼
      builder-quick · builder (TDD) · tester → builder-deep → reviewer → verifier
-                    │ hc send <foreman> ◀──────────────┘
+                    │ PR / issue comment, end turn ──▶ host notifies foreman
                     ▼
-               PR + evidence comment ──▶ gate ──▶ squash-merge, close issue
+               evidence ──▶ gate ──▶ squash-merge, close issue
 ```
 
-`hc` carries all messages between the foreman and its workers, so the setup works with every CLI. When a worker is Pi or Oh My Pi, the foreman also limits it to the skills its role needs.
+Workers report through GitHub comments and then end their turn. The host's completion notification wakes the foreman, so no messaging channel is needed. Each host adapter in `skills/foreman/references/hosts/` maps five verbs: place, start, follow up, wait and stop. Pi and Oh My Pi workers on Herdr are also restricted to the skills their role needs.
+
+T3 Code is not supported: its child tasks share the parent's checkout, so parallel writers would collide.
 
 ## Layout
 
 | Path | Purpose |
 |---|---|
-| `skills/foreman/` | The skill: the run loop, plus references for dispatch, roles, init, plan-to-issues and upkeep, and the profiles |
+| `skills/foreman/` | The skill: the run loop, plus references for dispatch, roles, init, plan-to-issues and upkeep, the host adapters (`references/hosts/`) and the profiles |
 | `factory/AGENTS.md` | Project template: authority, labels, shared rules and worker roles |
 | `prompts/` | Pi slash commands; each is a thin wrapper around the skill |
 | `setup.sh`, `doctor.sh`, `init.sh` | Machine setup, health check, per-project init |

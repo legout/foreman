@@ -10,11 +10,12 @@ agents=pi
 
 need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)" >&2; missing=1; }; }
 missing=0
-need hc  "herdr-core: https://github.com/herdrdev/herdr-app"
 need gh  "https://cli.github.com, then: gh auth login"
 need npx "Node.js 20+"
 need git "git"
 [ "$missing" = 0 ] || exit 1
+command -v hc >/dev/null || command -v paseo >/dev/null || command -v bb >/dev/null \
+  || { echo "missing: a worker host (hc/Herdr, paseo, or bb)" >&2; exit 1; }
 
 agent_args=(); IFS=, read -ra list <<<"$agents"; for a in "${list[@]}"; do agent_args+=(--agent "$a"); done
 skills() { npx -y skills add "$1" --global "${agent_args[@]}" --yes --copy "${@:2}"; }

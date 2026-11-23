@@ -1,6 +1,6 @@
 ---
 name: foreman
-description: "Autonomous software factory on GitHub issues with parallel agent workers in Herdr tabs. Use to run the factory backlog as foreman, initialize a repo for it (factory init), turn an approved plan into factory issues, or file deslop/test-diet upkeep issues."
+description: "Autonomous software factory on GitHub issues with parallel agent workers on Herdr, Paseo or BB. Use to run the factory backlog as foreman, initialize a repo for it (factory init), turn an approved plan into factory issues, or file deslop/test-diet upkeep issues."
 ---
 
 # Foreman
@@ -14,14 +14,13 @@ Find the case below that matches the request and follow it:
 
 When you run the factory, you own triage, routing, dispatch, acceptance, and merging. You never implement anything yourself. The project's `AGENTS.md` defines the authority grant, the labels, the commands, and the issue format. Load `agent-guardrails` now.
 
-GitHub is the only state. After a restart or compaction, rebuild everything from `gh issue list`, `gh pr list`, and `hc ls`. Keep no other state files.
+GitHub is the only state. After a restart or compaction, rebuild everything from `gh issue list`, `gh pr list`, and the host's list of your live workers. Keep no other state files.
 
 ## Startup
 
-1. Run `gh auth status` and `hc get $HC_TERMINAL_ID`. Stop if either one fails.
+1. Run `gh auth status`, then pick the host and read its adapter per [dispatch.md](references/dispatch.md). Stop if either fails.
 2. Read the active profile from `.foreman/profile` in the repository. If that file is missing, use `mixed`. The profile is `profiles/<name>.json` in this skill's directory, or `.foreman/<name>.json` in the repository.
-3. Read your `herdr.space` label from `hc get`.
-4. Rebuild state from GitHub.
+3. Rebuild state from GitHub.
 
 ## Lanes
 
@@ -56,9 +55,9 @@ Repeat until nothing is `status:ready` and no worker is live.
 2. **Dispatch** ready issues whose dependencies are closed and whose **Touches** do not overlap an active issue.
    - Run at most 3 writers and 2 read-only workers at once.
    - Lower both limits when the load average is above twice the core count.
-   - Launch each worker per [dispatch.md](references/dispatch.md).
+   - Place and start each worker per [dispatch.md](references/dispatch.md) and the host adapter.
    - Then set `status:active` and comment the session name and branch.
-3. **Wait.** Use `hc wait --children any`. A worker report is a claim, not acceptance.
+3. **Wait** with the host's wait verb, then read the new issue/PR comments. A worker report is a claim, not acceptance.
 4. **Check.** Read the PR diff and the evidence comment, and tick each acceptance criterion against the evidence. If TDD was required but there is no red/green proof, reject in one line. Then run the lane's next step.
 5. **Disposition** each reviewer finding before any repair:
    - reject a finding that fails the guardrails gate;
@@ -67,15 +66,14 @@ Repeat until nothing is `status:ready` and no worker is live.
 6. **Merge** when the gate passes and CI is green:
    - `gh pr merge --squash --delete-branch`;
    - close the issue with a one-line evidence comment;
-   - remove the worktree;
-   - `hc kill` and `hc rm` the issue's sessions.
+   - stop the issue's workers and release their checkouts with the host's stop verb.
 7. **Stuck workers:**
-   - `blocked` or `error`: run `hc read` once, then answer the worker or replace it;
-   - no progress: `hc interrupt`, then one steering message;
+   - `BLOCKED:` comment, host `blocked`, or `error`: read it once, then answer with follow up, or replace the worker;
+   - no progress: interrupt it, then one steering follow-up;
    - two failures: escalate the lane.
 8. **Owner gates.** Set `needs:owner`, comment the exact question in one line, and keep working on other ready issues.
 
 ## Look up
 
-- Worktree setup, launch per CLI, briefs, reviewer brief → [dispatch.md](references/dispatch.md)
+- Host detection, briefs, reports, reviewer brief → [dispatch.md](references/dispatch.md)
 - Profiles, roles, and per-role skills → [roles.md](references/roles.md)

@@ -16,7 +16,7 @@ How a profile is chosen and applied:
 - The repository picks its profile in `.foreman/profile`, which contains one line with the profile name.
 - To customise a profile, copy it to `.foreman/<name>.json`. A copy there takes precedence over the built-in profile.
 - `"cli"` sets the worker CLI for the whole profile (`pi` by default). An entry can override it with its own `"cli"`.
-- Model IDs are written as `provider/model` for `pi` and `omp`. The other CLIs drop the provider prefix (see [dispatch.md](dispatch.md)).
+- Model IDs are written as `provider/model` for `pi` and `omp`. The other CLIs drop the provider prefix; the host adapter maps each entry to the host's own provider and thinking IDs.
 
 ## Roles
 
@@ -35,6 +35,6 @@ How a profile is chosen and applied:
 
 Each shipped profile keeps the reviewer on a model that no builder uses, and keeps the tester on a different model from `builder-deep`. When you edit a profile, keep both properties, and prefer a different model family.
 
-Roles marked `—` are read-only. Launch them with the CLI's read-only switch (see [dispatch.md](dispatch.md)), each in its own detached worktree.
+Roles marked `—` are read-only. Launch them read-only as the host adapter describes, each in its own checkout at the PR head.
 
-Gather context inside a worker with that CLI's own subagents. Never open an extra Herdr session just to gather context.
+Gather context inside a worker with that CLI's own subagents. Never start an extra factory worker just to gather context.

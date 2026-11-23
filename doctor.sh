@@ -11,7 +11,12 @@ chk()  { if eval "$2" >/dev/null 2>&1; then ok "$1"; else bad "$1" "$3"; fi; }
 
 echo "tools"
 chk "gh authenticated"   "gh auth status" "gh auth login"
-chk "herdr-core running" "hc ls"          "start the Herdr app"
+echo "hosts (at least one)"
+hosts=0
+command -v hc    >/dev/null && { chk "herdr-core running" "hc ls" "start the Herdr app"; hosts=1; }
+command -v paseo >/dev/null && { chk "paseo daemon" "paseo status" "paseo start"; hosts=1; }
+command -v bb    >/dev/null && { chk "bb server" "bb status --json" "start BB"; hosts=1; }
+[ $hosts = 1 ] || bad "worker host" "install Herdr (hc), Paseo, or BB"
 
 echo "skills (~/.agents/skills)"
 for s in foreman agent-guardrails tdd systematic-debugging impeccable documentation-writer research \
