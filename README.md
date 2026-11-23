@@ -13,10 +13,11 @@ The foreman and the workers can each use a different CLI. The foreman picks the 
 ## Setup (once per machine)
 
 ```sh
-git clone https://github.com/legout/foreman
-./foreman/setup.sh                                   # Pi only
-./foreman/setup.sh --agents pi,claude-code,codex     # or any npx-skills agent ids
+curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash -s -- --agents pi,claude-code,codex
 ```
+
+`install.sh` clones foreman into `~/.local/share/foreman`, or pulls if a clone is already there, then runs `setup.sh` with your arguments. To check the code before you run it, clone manually instead: `git clone https://github.com/legout/foreman && ./foreman/setup.sh`.
 
 You need these installed first:
 
@@ -30,7 +31,7 @@ You need these installed first:
 ## Per project
 
 ```sh
-./foreman/init.sh ~/code/myproject [profile]   # profile: mixed | chatgpt | claude | open-weights
+~/.local/share/foreman/init.sh ~/code/myproject [profile]   # profile: mixed | chatgpt | claude | open-weights
 ```
 
 `init.sh` does the following:
@@ -93,4 +94,4 @@ T3 Code is not supported: its child tasks share the parent's checkout, so parall
 | `skills/foreman/` | The skill: the run loop, plus references for dispatch, roles, init, plan-to-issues and upkeep, the host adapters (`references/hosts/`) and the profiles |
 | `factory/AGENTS.md` | Project template: authority, labels, shared rules and worker roles |
 | `prompts/` | Pi slash commands; each is a thin wrapper around the skill |
-| `setup.sh`, `doctor.sh`, `init.sh` | Machine setup, health check, per-project init |
+| `install.sh`, `setup.sh`, `doctor.sh`, `init.sh` | curl installer, machine setup, health check, per-project init |
