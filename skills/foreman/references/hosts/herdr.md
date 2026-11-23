@@ -14,11 +14,11 @@ git worktree add --detach "$WT-r" <head-sha>   # reviewer or verifier
 
 Start each worker in a new tab of your space with `hc run`.
 
-- Pass the command as separate argv words, with the CLI's absolute path from `command -v`. A single quoted string runs under `sh` without your `PATH`.
+- Launch through your login shell: `<login-shell> -lic 'exec <cli> <cli-args>'`, where `<login-shell>` is `$SHELL` as an absolute path. A bare quoted string runs under `sh` without your `PATH`. An absolute CLI path also fails for Node-based CLIs such as `pi`, because their `env node` shebang still needs `PATH`.
 - `<m>` is the model from the profile and `<t>` its thinking level.
 
 ```sh
-hc run --bg --json --name <role>-<n> --cwd "$WT" --label herdr.space=<space> <abs-cli-path> <cli-args>
+hc run --bg --json --name <role>-<n> --cwd "$WT" --label herdr.space=<space> "$SHELL" -lic 'exec <cli> <cli-args>'
 hc wait <role>-<n>
 hc send <role>-<n> "Read and execute <brief-path>"
 ```
