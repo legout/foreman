@@ -20,7 +20,7 @@ Each adapter defines five verbs:
 - **place**: give the worker an isolated checkout;
 - **start**: launch the worker with the profile's CLI, model, and thinking level;
 - **follow up**: send the worker another message;
-- **wait**: block until any worker finishes, needs input, or errors;
+- **yield**: end the turn when the host can wake you; otherwise use its blocking fallback;
 - **stop**: end the worker.
 
 Every adapter follows the same rules:
@@ -47,12 +47,9 @@ DONE WHEN: <criteria met + evidence>; then follow your role section in AGENTS.md
 
 ## Reports
 
-Workers report through GitHub, and then end their turn:
+Workers post evidence on the PR (or the issue if there is no PR), or post `BLOCKED:` with a question on the issue. Then they use any wake-up step in their brief and end their turn.
 
-- **done**: the evidence goes in a PR comment;
-- **blocked**: the question goes in an issue comment starting with `BLOCKED:`.
-
-The host's completion notification wakes you. When it does, read the newest comments on the issue and PR. Then:
+On a host notification or worker wake-up message, read the newest comments on the issue and PR. Then:
 
 - **To answer a question, or to start a fix pass:** use *follow up* to send the answer or the accepted findings, together with the same VALIDATION line.
 - **When there is no comment, or the host reports an error:** read the host's status or log, and handle it as a stuck worker.

@@ -30,12 +30,12 @@ If the user has configured `list_profiles`, those profiles do not replace the fa
 
 For read-only roles, pick the provider's plan or read-only mode from `list_providers`/`inspect_provider` (for example opencode `Plan`, codex `Default Permissions`), and state "read-only" in the brief. Pi lists no modes, so the brief alone enforces read-only.
 
-## Follow up, wait, stop
+## Follow up, yield, stop
 
 | Verb | Tool (CLI) |
 |---|---|
 | follow up | `send_agent_prompt { agentId, prompt }` (`paseo send <id> "<msg>"`) |
-| wait | the `notifyOnFinish` callback; never poll. Without agent scope, use `paseo wait <id>` per agent |
+| yield | End your turn and resume on the `notifyOnFinish` callback; never poll. Without agent scope, use `paseo wait <id>` per agent. |
 | status | `paseo inspect <id>` (shows the effective provider, model, and thinking level), `paseo logs <id>` |
 | stop | `paseo stop <id>`; after a merge or rejection, `archive_workspace` removes the agent and its worktree, but the branch stays |
 

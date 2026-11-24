@@ -49,7 +49,7 @@ Escalate one lane at a time, giving a reason each time:
 
 ## Loop
 
-Repeat until nothing is `status:ready` and no worker is live.
+On each owner instruction or worker notification, reconcile the run within its original scope, including any owner changes.
 
 1. **Triage.** Every new issue without `needs:owner` needs acceptance criteria. If an issue is too large for one PR, split it. Set its lane and any `ui` or `docs` label, and set `status:ready` once nothing blocks it. If the work is unclear, file a spike issue instead.
 2. **Dispatch** ready issues whose dependencies are closed and whose **Touches** do not overlap an active issue.
@@ -57,7 +57,7 @@ Repeat until nothing is `status:ready` and no worker is live.
    - Lower both limits when the load average is above twice the core count.
    - Place and start each worker per [dispatch.md](references/dispatch.md) and the host adapter.
    - Then set `status:active` and comment the session name and branch.
-3. **Wait** with the host's wait verb, then read the new issue/PR comments. A worker report is a claim, not acceptance.
+3. **Collect or yield.** Read new issue/PR comments for workers that reported. Process each report once; a wake-up message alone is not evidence. If there is no actionable work but workers are still running, yield as the host adapter describes. Otherwise finish the run.
 4. **Check.** Read the PR diff and the evidence comment, and tick each acceptance criterion against the evidence. If TDD was required but there is no red/green proof, reject in one line. Then run the lane's next step.
 5. **Disposition** each reviewer finding before any repair:
    - reject a finding that fails the guardrails gate;

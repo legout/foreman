@@ -33,12 +33,12 @@ git worktree add --detach "${XDG_STATE_HOME:-$HOME/.local/state}/worktrees/<repo
 
 Never point a reviewer or verifier at a writer's environment.
 
-## Follow up, wait, stop
+## Follow up, yield, stop
 
 | Verb | Command |
 |---|---|
 | follow up | `bb thread tell <id> --mode auto --message-file -` (`auto` steers a live turn, or else starts a new one; plain `steer` cannot reach an idle worker) |
-| wait | parent notifications for child threads; use `bb thread wait <id> --status idle` only when you need one result now |
+| yield | End your turn and resume on parent notifications from child threads. |
 | status | `bb thread show <id> --json`, `bb thread output <id>`, `bb thread log <id>` |
 | stop | `bb thread stop <id>` |
 

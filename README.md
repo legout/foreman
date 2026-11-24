@@ -78,12 +78,12 @@ GitHub issues ──▶ foreman (any CLI, on Herdr | Paseo | BB)
                     │ host: place (isolated worktree) + start (CLI/model from profile)
                     ▼
      builder-quick · builder (TDD) · tester → builder-deep → reviewer → verifier
-                    │ PR / issue comment, end turn ──▶ host notifies foreman
+                    │ PR / issue comment ──▶ wake foreman
                     ▼
                evidence ──▶ gate ──▶ squash-merge, close issue
 ```
 
-Workers report through GitHub comments and then end their turn. The host's completion notification wakes the foreman, so no messaging channel is needed. Each host adapter in `skills/foreman/references/hosts/` maps five verbs: place, start, follow up, wait and stop. Pi and Oh My Pi workers on Herdr are also restricted to the skills their role needs.
+Workers report through GitHub comments. When there is nothing else to do, the foreman ends its turn and stays available for owner instructions. On Herdr, workers wake it with `hc send` after posting; BB and agent-scoped Paseo use host callbacks. The host adapters in `skills/foreman/references/hosts/` cover placement, startup, follow-up, yielding and cleanup.
 
 T3 Code is not supported: its child tasks share the parent's checkout, so parallel writers would collide.
 
