@@ -33,20 +33,19 @@ sources=TODO
 src=""; for p in project docs/specs docs/adr CONTEXT.md; do [ -e "$p" ] && src+="${src:+, }\`$p\`"; done
 [ -n "$src" ] && sources=$src
 
-if [ -e AGENTS.md ]; then
-  echo "AGENTS.md exists; merge $here/factory/AGENTS.md by hand" >&2
-else
-  REPO=$repo BRANCH=$branch SETUP=$setup TEST=$test GATE=$gate SOURCES=$sources python3 - "$here/factory/AGENTS.md" > AGENTS.md <<'PY'
+mkdir -p .foreman
+out=AGENTS.md
+[ -e AGENTS.md ] && out=.foreman/AGENTS.template.md   # never overwrite: "factory init" merges the rendered template
+REPO=$repo BRANCH=$branch SETUP=$setup TEST=$test GATE=$gate SOURCES=$sources python3 - "$here/factory/AGENTS.md" > "$out" <<'PY'
 import os, sys
 s = open(sys.argv[1]).read()
 for k in ("REPO", "BRANCH", "SETUP", "TEST", "GATE", "SOURCES"):
     s = s.replace("{{%s}}" % k, os.environ[k])
 print(s.replace("`TODO`", "TODO"), end="")
 PY
-  echo "wrote AGENTS.md (repo $repo, setup: $setup, test: $test, gate: $gate)"
-fi
-mkdir -p .foreman && echo "$profile" > .foreman/profile
-ln -sfn AGENTS.md CLAUDE.md 2>/dev/null || true   # Claude Code reads CLAUDE.md
+echo "wrote $out (repo $repo, setup: $setup, test: $test, gate: $gate)"
+echo "$profile" > .foreman/profile
+ln -sn AGENTS.md CLAUDE.md 2>/dev/null || true   # Claude Code reads CLAUDE.md; create only, never replace
 
 while IFS='|' read -r name color desc; do
   gh label create "$name" --color "$color" --description "$desc" --force >/dev/null
@@ -63,4 +62,8 @@ ui|f9d0c4|Visual builder
 docs|0075ca|Docs writer
 EOF
 echo "labels ready on $repo; profile: $profile"
-grep -q TODO AGENTS.md && echo "next: ask your agent \"factory init\" to fill the remaining TODOs" || true
+if [ "$out" != AGENTS.md ]; then
+  echo "next: ask your agent \"factory init\" to merge $out into AGENTS.md and fill its TODOs"
+elif grep -q TODO AGENTS.md; then
+  echo "next: ask your agent \"factory init\" to fill the remaining TODOs"
+fi

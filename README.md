@@ -22,7 +22,7 @@ The installer clones or updates `~/.local/share/foreman`, installs the skills an
 ~/.local/share/foreman/init.sh ~/code/myproject mixed
 ```
 
-This creates the GitHub labels, selects a model profile, and generates `AGENTS.md` (linked as `CLAUDE.md`) with the setup, test, and CI commands it can detect: npm, pnpm, bun, uv, pip, cargo, go, and Makefile. Pick the preset that matches your subscriptions from [the table below](#choose-or-customise-models); anything the script can’t detect stays `TODO` for the next step. If `AGENTS.md` already exists, merge the [factory template](factory/AGENTS.md) into it yourself. Run `/factory-init` in Pi (or ask your agent to **factory init**) to fill any `TODO`s. Review the authority section before dispatch: it defines what Foreman may do without asking.
+This creates the GitHub labels, selects a model profile, and generates `AGENTS.md` (linked as `CLAUDE.md`) with the setup, test, and CI commands it can detect: npm, pnpm, bun, uv, pip, cargo, go, and Makefile. Pick the preset that matches your subscriptions from [the table below](#choose-or-customise-models); anything the script can’t detect stays `TODO` for the next step. If `AGENTS.md` already exists, `init.sh` leaves it untouched and renders the [factory template](factory/AGENTS.md) to `.foreman/AGENTS.template.md`; `/factory-init` merges it for you. Run `/factory-init` in Pi (or ask your agent to **factory init**) to fill any `TODO`s. Review the authority section before dispatch: it defines what Foreman may do without asking.
 
 ### 3. Start work
 
