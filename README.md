@@ -80,6 +80,6 @@ Edit `.foreman/my-team.json` to match the models available on your host (`pi --l
 2. In each project, re-run `init.sh` without a preset. It keeps `.foreman/profile`, refreshes the labels, and writes the new template to `.foreman/AGENTS.template.md`.
 3. Run `/factory-init` to merge the template into `AGENTS.md`, then commit it.
 
-`init.sh` records the version in `.foreman/version`, and `doctor.sh` run from a project root warns when that project is behind the installed Foreman. [Release notes](https://github.com/legout/foreman/releases) say which releases need step 2.
+`init.sh` records the version in `.foreman/version`, and `doctor.sh` run from a project root warns when that project is behind the installed Foreman. The [changelog](CHANGELOG.md) says which releases need step 2.
 
 See the [Foreman skill](skills/foreman/SKILL.md) for lane gates, [host adapters](skills/foreman/references/hosts) for launch details, and the [factory template](factory/AGENTS.md) for permissions and worker rules.
