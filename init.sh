@@ -4,9 +4,9 @@
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 dir=${1:?usage: init.sh <repo-dir> [profile]}
-profile=${2:-mixed}
+profile=${2:-}   # empty: keep .foreman/profile, else mixed
 skill="$here/skills/foreman"
-[ -f "$skill/profiles/$profile.json" ] || { echo "unknown profile: $profile ($(ls "$skill/profiles" | sed 's/.json//' | xargs))" >&2; exit 1; }
+[ -z "$profile" ] || [ -f "$skill/profiles/$profile.json" ] || { echo "unknown profile: $profile ($(ls "$skill/profiles" | sed 's/.json//' | xargs))" >&2; exit 1; }
 cd "$dir"
 repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 branch=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
@@ -44,7 +44,9 @@ for k in ("REPO", "BRANCH", "SETUP", "TEST", "GATE", "SOURCES"):
 print(s.replace("`TODO`", "TODO"), end="")
 PY
 echo "wrote $out (repo $repo, setup: $setup, test: $test, gate: $gate)"
-echo "$profile" > .foreman/profile
+if [ -n "$profile" ]; then echo "$profile" > .foreman/profile
+elif [ -s .foreman/profile ]; then profile=$(cat .foreman/profile)
+else profile=mixed; echo "$profile" > .foreman/profile; fi
 ln -sn AGENTS.md CLAUDE.md 2>/dev/null || true   # Claude Code reads CLAUDE.md; create only, never replace
 
 while IFS='|' read -r name color desc; do

@@ -14,7 +14,7 @@ You need Git, `python3`, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth
 curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash
 ```
 
-The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. If you won’t use the `mixed` preset, pipe into `FOREMAN_PROFILE=<preset> bash` instead of `bash`; `doctor.sh` checks that profile. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead.
+The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead. Run the same command again to update.
 
 ### 2. Initialise a GitHub project
 
@@ -22,11 +22,18 @@ The installer clones or updates `~/.local/share/foreman`, installs the skills an
 ~/.local/share/foreman/init.sh ~/code/myproject mixed
 ```
 
-This creates the GitHub labels, selects a model profile, and generates `AGENTS.md` (linked as `CLAUDE.md`) with the setup, test, and CI commands it can detect: npm, pnpm, bun, uv, pip, cargo, go, and Makefile. Pick the preset that matches your subscriptions from [the table below](#choose-or-customise-models); anything the script can’t detect stays `TODO` for the next step. If `AGENTS.md` already exists, `init.sh` leaves it untouched and renders the [factory template](factory/AGENTS.md) to `.foreman/AGENTS.template.md`; `/factory-init` merges it for you. Run `/factory-init` in Pi (or ask your agent to **factory init**) to fill any `TODO`s. Review the authority section before dispatch: it defines what Foreman may do without asking.
+Use the [preset](#choose-or-customise-models) that matches your subscriptions as the last argument. `init.sh`:
+
+- creates the GitHub labels;
+- stores the preset in `.foreman/profile` (a re-run without a preset keeps the current one);
+- writes `AGENTS.md`, linked as `CLAUDE.md`, with the setup, test, and CI commands it detects for npm, pnpm, bun, uv, pip, cargo, go, and Makefile. Anything it can’t detect stays `TODO`;
+- leaves an existing `AGENTS.md` or `CLAUDE.md` untouched and writes the [factory template](factory/AGENTS.md) to `.foreman/AGENTS.template.md` instead.
+
+Then run `/factory-init` in Pi (or ask your agent to **factory init**). It fills the `TODO`s or merges the template, and shows you the result before writing. Review the authority section before dispatch: it defines what Foreman may do without asking.
 
 ### 3. Start work
 
-Open an agent in your project inside Herdr, Paseo, or BB. Use a Pi command below, or ask another CLI to do the same thing with the `foreman` skill.
+Open an agent in your project inside Herdr, Paseo, or BB. This session is the Foreman; a mid-tier model such as Sonnet or Terra at `high` is enough. Use a Pi command below, or ask another CLI to do the same thing with the `foreman` skill.
 
 | Starting point | What to run |
 |---|---|
@@ -42,6 +49,8 @@ Open an agent in your project inside Herdr, Paseo, or BB. Use a Pi command below
 3. **Accept:** Workers report evidence on GitHub. Foreman checks it against each task’s criteria before merging, with independent review and verification where the lane calls for it. When idle, it yields to worker notifications on Herdr, BB, and agent-scoped Paseo, so you can send more instructions.
 4. **Verify the goal:** Where the epic has a final verification issue, a verifier checks the integrated result. If it fails, Foreman can file the missing in-scope work and retry for up to two rounds, then marks `needs:owner`. Out-of-scope decisions go to the owner immediately.
 
+Your part during a run: answer issues labelled `needs:owner`. You can message the Foreman session at any time; it picks up new instructions between worker reports.
+
 Foreman does not implement changes itself or release or deploy them. For repeatable project-specific verification, use `project-verification` to write the `verify-*` recipe your verifier should follow.
 
 ## Choose or customise models
@@ -56,13 +65,13 @@ Browse [the preset JSON files](skills/foreman/profiles). Each worker role has an
 | `open-weights` | Direct open-weight providers or CommandCode |
 | `opencode-go` | An OpenCode Go subscription; set `OPENCODE_API_KEY` for Pi on the worker host |
 
-After initialising the project, run this **from the project root** to make a custom profile:
+To use a custom profile, initialise with the closest preset, then run this **from the project root**:
 
 ```sh
 cp ~/.local/share/foreman/skills/foreman/profiles/mixed.json .foreman/my-team.json
 printf '%s\n' my-team > .foreman/profile
 ```
 
-Edit `.foreman/my-team.json` to match the models available on your host (`pi --list-models` for Pi). Keep reviewer models distinct from builders. A top-level `"cli"` field (`claude`, `codex`, `omp`, `opencode`, or `hermes`) runs the workers with another CLI; every shipped profile uses `pi`. `init.sh` and `doctor.sh` accept built-in preset names only; the running skill also loads project-local profiles.
+Edit `.foreman/my-team.json` to match the models available on your host (`pi --list-models` for Pi). Keep reviewer models distinct from builders. A top-level `"cli"` field (`claude`, `codex`, `omp`, `opencode`, or `hermes`) runs the workers with another CLI; every shipped profile uses `pi`. `init.sh` accepts built-in preset names only; the running skill also loads project-local profiles. To check that Pi can reach every model of a preset, run `FOREMAN_PROFILE=<preset> ~/.local/share/foreman/doctor.sh`.
 
 See the [Foreman skill](skills/foreman/SKILL.md) for lane gates, [host adapters](skills/foreman/references/hosts) for launch details, and the [factory template](factory/AGENTS.md) for permissions and worker rules.
