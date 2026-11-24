@@ -1,6 +1,6 @@
 # foreman
 
-Foreman turns GitHub issues into reviewed, verified pull requests. One agent session triages the backlog, dispatches workers in isolated worktrees, and squash-merges only when the evidence and CI gates pass. GitHub issues, PRs, and comments are the source of truth; there’s no separate job database.
+Foreman turns GitHub issues into reviewed pull requests. One agent session triages the backlog, dispatches workers in isolated worktrees, and squash-merges only when the evidence and CI gates pass. GitHub issues, PRs, and comments are the source of truth; there’s no separate job database.
 
 Use **Herdr**, **Paseo**, or **BB** as the worker host. Foreman and its workers can use different agent CLIs: Pi, Oh My Pi, Claude Code, Codex, OpenCode, or Hermes, depending on the host.
 
@@ -8,13 +8,13 @@ Use **Herdr**, **Paseo**, or **BB** as the worker host. Foreman and its workers 
 
 ### 1. Install Foreman
 
-You need Git, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth login`), a running worker host, and your agent CLI. For Pi, run:
+You need Git, `python3`, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth login`), a running worker host, and your agent CLI. For Pi, run:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash
 ```
 
-The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead.
+The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. If you won’t use the `mixed` preset, pipe into `FOREMAN_PROFILE=<preset> bash` instead of `bash`; `doctor.sh` checks that profile. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead.
 
 ### 2. Initialise a GitHub project
 
@@ -22,7 +22,7 @@ The installer clones or updates `~/.local/share/foreman`, installs the skills an
 ~/.local/share/foreman/init.sh ~/code/myproject mixed
 ```
 
-This creates the GitHub labels, selects a model profile, and generates `AGENTS.md` with detected setup, test, and CI commands. If `AGENTS.md` already exists, merge the [factory template](factory/AGENTS.md) into it yourself. Run `/factory-init` in Pi (or ask your agent to **factory init**) to fill any `TODO`s. Review the authority section before dispatch: it defines what Foreman may do without asking.
+This creates the GitHub labels, selects a model profile, and generates `AGENTS.md` (linked as `CLAUDE.md`) with the setup, test, and CI commands it can detect: npm, pnpm, bun, uv, pip, cargo, go, and Makefile. Pick the preset that matches your subscriptions from [the table below](#choose-or-customise-models); anything the script can’t detect stays `TODO` for the next step. If `AGENTS.md` already exists, merge the [factory template](factory/AGENTS.md) into it yourself. Run `/factory-init` in Pi (or ask your agent to **factory init**) to fill any `TODO`s. Review the authority section before dispatch: it defines what Foreman may do without asking.
 
 ### 3. Start work
 
@@ -31,7 +31,7 @@ Open an agent in your project inside Herdr, Paseo, or BB. Use a Pi command below
 | Starting point | What to run |
 |---|---|
 | A small, clear goal within the project’s authority | `/factory-job "Document the existing config options and verify the examples"` creates an epic with up to five tasks, including final verification, and starts dispatch. Work that needs a spec or architectural decision goes to `shape-design` instead. |
-| An approved implementation plan | `/to-issues path/to/plan.md` previews the tasks for approval, then creates an epic and sub-issues with native GitHub **blocked by** edges. Run `/factory-run` afterward. |
+| An approved plan from `write-implementation-plan` | `/to-issues path/to/plan.md` previews the tasks for approval, then creates an epic and sub-issues with native GitHub **blocked by** edges. Run `/factory-run` afterward. |
 | Issues already on GitHub | `/factory-run 42 43` runs the selected issues; `/factory-run` without arguments considers the open backlog. For manual issues, follow the [issue template](factory/AGENTS.md): goal, acceptance criteria, files touched, source, and dependencies. |
 | Cleanup candidates | `/factory-upkeep deslop` or `/factory-upkeep test-diet` proposes issues for owner approval before filing. |
 
@@ -63,6 +63,6 @@ cp ~/.local/share/foreman/skills/foreman/profiles/mixed.json .foreman/my-team.js
 printf '%s\n' my-team > .foreman/profile
 ```
 
-Edit `.foreman/my-team.json` to match the models available on your host (`pi --list-models` for Pi). Keep reviewer models distinct from builders. `init.sh` and `doctor.sh` take built-in preset names; the running skill also loads project-local profiles.
+Edit `.foreman/my-team.json` to match the models available on your host (`pi --list-models` for Pi). Keep reviewer models distinct from builders. A top-level `"cli"` field (`claude`, `codex`, `omp`, `opencode`, or `hermes`) runs the workers with another CLI; every shipped profile uses `pi`. `init.sh` and `doctor.sh` accept built-in preset names only; the running skill also loads project-local profiles.
 
 See the [Foreman skill](skills/foreman/SKILL.md) for lane gates, [host adapters](skills/foreman/references/hosts) for launch details, and the [factory template](factory/AGENTS.md) for permissions and worker rules.
