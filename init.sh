@@ -36,13 +36,11 @@ src=""; for p in project docs/specs docs/adr CONTEXT.md; do [ -e "$p" ] && src+=
 mkdir -p .foreman
 out=AGENTS.md
 [ -e AGENTS.md ] && out=.foreman/AGENTS.template.md   # never overwrite: "factory init" merges the rendered template
-REPO=$repo BRANCH=$branch SETUP=$setup TEST=$test GATE=$gate SOURCES=$sources python3 - "$here/factory/AGENTS.md" > "$out" <<'PY'
-import os, sys
-s = open(sys.argv[1]).read()
-for k in ("REPO", "BRANCH", "SETUP", "TEST", "GATE", "SOURCES"):
-    s = s.replace("{{%s}}" % k, os.environ[k])
-print(s.replace("`TODO`", "TODO"), end="")
-PY
+REPO=$repo BRANCH=$branch SETUP=$setup TEST=$test GATE=$gate SOURCES=$sources node -e '
+const fs = require("fs"); let s = fs.readFileSync(process.argv[1], "utf8");
+for (const k of ["REPO", "BRANCH", "SETUP", "TEST", "GATE", "SOURCES"]) s = s.replaceAll("{{" + k + "}}", process.env[k]);
+process.stdout.write(s.replaceAll("`TODO`", "TODO"));
+' "$here/factory/AGENTS.md" > "$out"
 echo "wrote $out (repo $repo, setup: $setup, test: $test, gate: $gate)"
 if [ -n "$profile" ]; then echo "$profile" > .foreman/profile
 elif [ -s .foreman/profile ]; then profile=$(cat .foreman/profile)

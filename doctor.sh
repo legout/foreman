@@ -35,15 +35,13 @@ done
 if [[ ",$agents," == *,pi,* ]] && command -v pi >/dev/null; then
   echo "pi models of profile ${FOREMAN_PROFILE:-mixed} (first entry per role; fallbacks are fine)"
   models=$(pi --list-models 2>/dev/null | awk 'NR>1{print $1"/"$2}')
-  python3 - "$here/skills/foreman/profiles/${FOREMAN_PROFILE:-mixed}.json" "$models" <<'PY' || fail=1
-import json, sys
-have = set(sys.argv[2].split())
-roles = json.load(open(sys.argv[1]))["roles"]
-for role, chain in roles.items():
-    first = chain[0]["model"]
-    if first in have: print(f"  ok    {role}: {first}")
-    elif any(e["model"] in have for e in chain): print(f"  warn  {role}: {first} missing, falls back")
-    else: print(f"  FAIL  {role}: no model of its chain in pi"); sys.exit(1)
-PY
+  node -e '
+const have = new Set(process.argv[2].split(/\s+/).filter(Boolean));
+for (const [role, chain] of Object.entries(require(process.argv[1]).roles)) {
+  const first = chain[0].model;
+  if (have.has(first)) console.log(`  ok    ${role}: ${first}`);
+  else if (chain.some(e => have.has(e.model))) console.log(`  warn  ${role}: ${first} missing, falls back`);
+  else { console.log(`  FAIL  ${role}: no model of its chain in pi`); process.exitCode = 1; break; }
+}' "$here/skills/foreman/profiles/${FOREMAN_PROFILE:-mixed}.json" "$models" || fail=1
 fi
 exit $fail

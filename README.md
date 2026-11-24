@@ -8,7 +8,7 @@ Use **Herdr**, **Paseo**, or **BB** as the worker host. Foreman and its workers 
 
 ### 1. Install Foreman
 
-You need Git, `python3`, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth login`), a running worker host, and your agent CLI. For Pi, run:
+You need Git, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth login`), a running worker host, and your agent CLI. For Pi, run:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash
