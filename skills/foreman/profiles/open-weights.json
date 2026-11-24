@@ -32,10 +32,6 @@
         "thinking": "high"
       },
       {
-        "model": "zai/glm-5.3",
-        "thinking": "high"
-      },
-      {
         "model": "kimi-coding/k3.1-pro",
         "thinking": "high"
       }
@@ -43,10 +39,6 @@
     "builder-deep": [
       {
         "model": "zai/glm-5.4",
-        "thinking": "max"
-      },
-      {
-        "model": "zai/glm-5.3",
         "thinking": "max"
       }
     ],
@@ -56,7 +48,7 @@
         "thinking": "high"
       },
       {
-        "model": "zai/glm-5.3",
+        "model": "kimi-coding/k3.1-pro",
         "thinking": "high"
       }
     ],
@@ -66,7 +58,7 @@
         "thinking": "medium"
       },
       {
-        "model": "zai/glm-5.3",
+        "model": "zai/glm-5.4",
         "thinking": "medium"
       }
     ],
@@ -82,17 +74,17 @@
     ],
     "reviewer": [
       {
-        "model": "kimi-coding/k3.1-pro",
-        "thinking": "max"
+        "model": "minimax/MiniMax-M3",
+        "thinking": "high"
       },
       {
-        "model": "command-code/deepseek/deepseek-v4.1-flash-fast",
+        "model": "minimax/MiniMax-M2.7",
         "thinking": "high"
       }
     ],
     "verifier": [
       {
-        "model": "zai/glm-5.3",
+        "model": "zai/glm-5.4",
         "thinking": "medium"
       },
       {

@@ -1,0 +1,116 @@
+{
+  "description": "OpenCode Go subscription through Pi (OPENCODE_API_KEY). Fast models for routine work, vision-capable UI builders, and independent deep review.",
+  "cli": "pi",
+  "roles": {
+    "foreman": [
+      {
+        "model": "opencode-go/gpt-6-luna",
+        "thinking": "high"
+      },
+      {
+        "model": "opencode-go/claude-haiku-5-5",
+        "thinking": "high"
+      }
+    ],
+    "builder-quick": [
+      {
+        "model": "opencode-go/claude-haiku-5-5",
+        "thinking": "low"
+      },
+      {
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "thinking": "low"
+      }
+    ],
+    "builder": [
+      {
+        "model": "opencode-go/minimax-m3",
+        "thinking": "high"
+      },
+      {
+        "model": "opencode-go/mimo-v2.6-pro",
+        "thinking": "high"
+      }
+    ],
+    "builder-deep": [
+      {
+        "model": "opencode-go/kimi-k3.1-pro",
+        "thinking": "max"
+      },
+      {
+        "model": "opencode-go/minimax-m3",
+        "thinking": "high"
+      }
+    ],
+    "builder-ui": [
+      {
+        "model": "opencode-go/kimi-k3.1-pro",
+        "thinking": "high"
+      },
+      {
+        "model": "opencode-go/mimo-v2.6-pro",
+        "thinking": "high"
+      }
+    ],
+    "writer": [
+      {
+        "model": "opencode-go/claude-haiku-5-5",
+        "thinking": "medium"
+      },
+      {
+        "model": "opencode-go/gpt-6-luna",
+        "thinking": "medium"
+      }
+    ],
+    "tester": [
+      {
+        "model": "opencode-go/qwen3.8-max",
+        "thinking": "high"
+      },
+      {
+        "model": "opencode-go/gpt-6-luna",
+        "thinking": "high"
+      }
+    ],
+    "reviewer": [
+      {
+        "model": "opencode-go/deepseek-v4-pro",
+        "thinking": "max"
+      },
+      {
+        "model": "opencode-go/qwen3.8-max",
+        "thinking": "high"
+      }
+    ],
+    "verifier": [
+      {
+        "model": "opencode-go/gpt-6-luna",
+        "thinking": "medium"
+      },
+      {
+        "model": "opencode-go/claude-haiku-5-5",
+        "thinking": "medium"
+      }
+    ],
+    "scout": [
+      {
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "opencode-go/claude-haiku-5-5",
+        "thinking": "low"
+      }
+    ],
+    "oracle": [
+      {
+        "model": "opencode-go/qwen3.8-max",
+        "thinking": "high"
+      },
+      {
+        "model": "opencode-go/deepseek-v4-pro",
+        "thinking": "max"
+      }
+    ]
+  }
+}

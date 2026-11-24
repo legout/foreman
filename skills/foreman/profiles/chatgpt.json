@@ -4,7 +4,7 @@
   "roles": {
     "foreman": [
       {
-        "model": "openai-codex/gpt-6.2-sol",
+        "model": "openai-codex/gpt-6.1-terra",
         "thinking": "high"
       }
     ],
@@ -47,10 +47,6 @@
     "reviewer": [
       {
         "model": "openai-codex/gpt-6.2-astra",
-        "thinking": "xhigh"
-      },
-      {
-        "model": "openai-codex/gpt-6.2-sol",
         "thinking": "xhigh"
       }
     ],

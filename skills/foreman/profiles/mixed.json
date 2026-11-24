@@ -4,7 +4,7 @@
   "roles": {
     "foreman": [
       {
-        "model": "claude-code/claude-opus-5-5",
+        "model": "openai-codex/gpt-6.1-terra",
         "thinking": "high"
       },
       {
@@ -18,11 +18,11 @@
         "thinking": "low"
       },
       {
-        "model": "openai-codex/gpt-6-luna",
+        "model": "claude-code/claude-haiku-5-5",
         "thinking": "low"
       },
       {
-        "model": "claude-code/claude-haiku-5-5",
+        "model": "openai-codex/gpt-6-luna",
         "thinking": "low"
       }
     ],
@@ -32,7 +32,7 @@
         "thinking": "high"
       },
       {
-        "model": "zai/glm-5.3",
+        "model": "zai/glm-5.4",
         "thinking": "high"
       },
       {
@@ -56,6 +56,10 @@
         "thinking": "high"
       },
       {
+        "model": "kimi-coding/k3.1-pro",
+        "thinking": "high"
+      },
+      {
         "model": "claude-code/claude-opus-5-5",
         "thinking": "high"
       }
@@ -76,37 +80,37 @@
         "thinking": "high"
       },
       {
-        "model": "zai/glm-5.3",
+        "model": "zai/glm-5.4",
         "thinking": "high"
       }
     ],
     "reviewer": [
       {
-        "model": "openai-codex/gpt-6.2-sol",
+        "model": "openai-codex/gpt-6.2-astra",
         "thinking": "xhigh"
       },
       {
-        "model": "kimi-coding/k3.1-pro",
-        "thinking": "max"
-      },
-      {
-        "model": "claude-code/claude-opus-5-5",
+        "model": "openai-codex/gpt-6.1-sol",
         "thinking": "xhigh"
       }
     ],
     "verifier": [
       {
-        "model": "zai/glm-5.3",
+        "model": "openai-codex/gpt-6.1-terra",
         "thinking": "medium"
       },
       {
-        "model": "openai-codex/gpt-6.1-terra",
+        "model": "zai/glm-5.4",
         "thinking": "medium"
       }
     ],
     "scout": [
       {
         "model": "zai/glm-5.3-flash",
+        "thinking": "low"
+      },
+      {
+        "model": "claude-code/claude-haiku-5-5",
         "thinking": "low"
       },
       {

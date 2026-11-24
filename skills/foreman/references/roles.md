@@ -9,7 +9,8 @@ A profile maps each role to an ordered chain of `{model, thinking}` entries. Use
 | `mixed` | Claude, ChatGPT, GLM, and Kimi subscriptions. Reviewers come from a different family than builders. |
 | `chatgpt` | ChatGPT only. One family, so the reviewer uses a higher tier than the builder. |
 | `claude` | Claude only. One family, so the reviewer uses a higher tier than the builder. |
-| `open-weights` | GLM, Kimi, DeepSeek, and MiniMax, through direct APIs, CommandCode, or OpenCode Go. |
+| `open-weights` | GLM, Kimi, DeepSeek, and MiniMax through direct providers and CommandCode. |
+| `opencode-go` | One OpenCode Go subscription through Pi (`OPENCODE_API_KEY` on the worker host). |
 
 How a profile is chosen and applied:
 

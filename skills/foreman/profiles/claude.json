@@ -4,7 +4,7 @@
   "roles": {
     "foreman": [
       {
-        "model": "claude-code/claude-opus-5-5",
+        "model": "claude-code/claude-sonnet-5-5",
         "thinking": "high"
       }
     ],
@@ -47,10 +47,6 @@
     "reviewer": [
       {
         "model": "claude-code/claude-fable-5-2",
-        "thinking": "xhigh"
-      },
-      {
-        "model": "claude-code/claude-opus-5-5",
         "thinking": "xhigh"
       }
     ],
