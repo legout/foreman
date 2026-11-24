@@ -1,12 +1,18 @@
 {
   "name": "pi-foreman",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Autonomous Pi software factory: plan to GitHub issues, foreman routes them to lanes and parallel workers on Herdr, Paseo, or BB; PRs merge on evidence.",
-  "keywords": ["pi-package"],
+  "keywords": [
+    "pi-package"
+  ],
   "license": "MIT",
   "repository": "github:legout/foreman",
   "pi": {
-    "skills": ["./skills"],
-    "prompts": ["./prompts/*.md"]
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts/*.md"
+    ]
   }
 }
