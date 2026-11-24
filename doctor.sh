@@ -19,8 +19,9 @@ command -v bb    >/dev/null && { chk "bb server" "bb status --json" "start BB"; 
 [ $hosts = 1 ] || bad "worker host" "install Herdr (hc), Paseo, or BB"
 
 echo "skills (~/.agents/skills)"
-for s in foreman agent-guardrails tdd systematic-debugging impeccable documentation-writer research \
-         shape-design planning-contract write-implementation-plan deslop test-diet project-verification; do
+skills=$(grep -oE -- '--skill [a-z-]+' "$here/setup.sh" | cut -d' ' -f2)   # one list: whatever setup.sh installs
+[ -n "$skills" ] || bad "setup.sh" "cannot read the skill list"
+for s in $skills; do
   [ -f "$HOME/.agents/skills/$s/SKILL.md" ] && ok "$s" || bad "$s" "re-run setup.sh"
 done
 
