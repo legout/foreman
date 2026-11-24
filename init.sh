@@ -6,6 +6,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 dir=${1:?usage: init.sh <repo-dir> [profile]}
 profile=${2:-}   # empty: keep .foreman/profile, else mixed
 skill="$here/skills/foreman"
+version=$(node -p "require('$here/package.json').version")
 [ -z "$profile" ] || [ -f "$skill/profiles/$profile.json" ] || { echo "unknown profile: $profile ($(ls "$skill/profiles" | sed 's/.json//' | xargs))" >&2; exit 1; }
 cd "$dir"
 repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
@@ -61,7 +62,9 @@ needs:owner|d93f0b|Waits on a human decision
 ui|f9d0c4|Visual builder
 docs|0075ca|Docs writer
 EOF
-echo "labels ready on $repo; profile: $profile"
+old=$(cat .foreman/version 2>/dev/null || true)
+echo "$version" > .foreman/version
+echo "labels ready on $repo; profile: $profile; foreman $([ -n "$old" ] && [ "$old" != "$version" ] && echo "$old -> ")$version"
 if [ "$out" != AGENTS.md ]; then
   echo "next: ask your agent \"factory init\" to merge $out into AGENTS.md and fill its TODOs"
 elif grep -q TODO AGENTS.md; then

@@ -14,7 +14,7 @@ You need Git, Node.js 20+ with `npx`, an authenticated `gh` (`gh auth login`), a
 curl -fsSL https://raw.githubusercontent.com/legout/foreman/main/install.sh | bash
 ```
 
-The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead. Run the same command again to update.
+The installer clones or updates `~/.local/share/foreman`, installs the skills and Pi prompt commands, and runs `doctor.sh`. To install for additional agents, append `-s -- --agents pi,claude-code,codex` after `bash`. To inspect the installer first, clone the repo and run `./setup.sh` from the checkout instead. To pin a [release](https://github.com/legout/foreman/releases), pipe into `FOREMAN_REF=v0.2.0 bash` instead of `bash`; without it, Foreman follows `main`.
 
 ### 2. Initialise a GitHub project
 
@@ -73,5 +73,13 @@ printf '%s\n' my-team > .foreman/profile
 ```
 
 Edit `.foreman/my-team.json` to match the models available on your host (`pi --list-models` for Pi). Keep reviewer models distinct from builders. A top-level `"cli"` field (`claude`, `codex`, `omp`, `opencode`, or `hermes`) runs the workers with another CLI; every shipped profile uses `pi`. `init.sh` accepts built-in preset names only; the running skill also loads project-local profiles. To check that Pi can reach every model of a preset, run `FOREMAN_PROFILE=<preset> ~/.local/share/foreman/doctor.sh`.
+
+## Update
+
+1. Re-run the install command. It updates Foreman, the skills, and the Pi commands for every project.
+2. In each project, re-run `init.sh` without a preset. It keeps `.foreman/profile`, refreshes the labels, and writes the new template to `.foreman/AGENTS.template.md`.
+3. Run `/factory-init` to merge the template into `AGENTS.md`, then commit it.
+
+`init.sh` records the version in `.foreman/version`, and `doctor.sh` run from a project root warns when that project is behind the installed Foreman. [Release notes](https://github.com/legout/foreman/releases) say which releases need step 2.
 
 See the [Foreman skill](skills/foreman/SKILL.md) for lane gates, [host adapters](skills/foreman/references/hosts) for launch details, and the [factory template](factory/AGENTS.md) for permissions and worker rules.

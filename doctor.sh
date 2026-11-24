@@ -9,6 +9,11 @@ bad()  { printf '  FAIL  %s -> %s\n' "$1" "$2"; fail=1; }
 warn() { printf '  warn  %s\n' "$1"; }
 chk()  { if eval "$2" >/dev/null 2>&1; then ok "$1"; else bad "$1" "$3"; fi; }
 
+version=$(node -p "require('$here/package.json').version")
+echo "foreman $version"
+if [ -f .foreman/version ] && [ "$(cat .foreman/version)" != "$version" ]; then
+  warn "this project was initialised with foreman $(cat .foreman/version); re-run init.sh here, then /factory-init"
+fi
 echo "tools"
 chk "gh authenticated"   "gh auth status" "gh auth login"
 echo "hosts (at least one)"
