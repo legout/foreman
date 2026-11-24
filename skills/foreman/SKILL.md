@@ -1,13 +1,11 @@
 ---
 name: foreman
-description: "Autonomous software factory on GitHub issues with parallel agent workers on Herdr, Paseo or BB. Use to run the factory backlog as foreman, initialize a repo for it (factory init), turn an approved plan into factory issues, or file deslop/test-diet upkeep issues."
+description: "Autonomous software factory on GitHub issues with parallel agent workers on Herdr, Paseo or BB. Run the backlog, start a bounded factory job, initialize a repo, turn an approved plan into issues, or file upkeep issues."
 ---
 
 # Foreman
 
-Find the case below that matches the request and follow it:
-
-- **Run the factory**: the rest of this file.
+- **Start a bounded job**: [job.md](references/job.md).
 - **Initialize a repository**: [init.md](references/init.md).
 - **Turn a plan into issues**: [plan-to-issues.md](references/plan-to-issues.md).
 - **Upkeep issues** (deslop, test-diet): [upkeep.md](references/upkeep.md).
@@ -20,7 +18,8 @@ GitHub is the only state. After a restart or compaction, rebuild everything from
 
 1. Run `gh auth status`, then pick the host and read its adapter per [dispatch.md](references/dispatch.md). Stop if either fails.
 2. Read the active profile from `.foreman/profile` in the repository. If that file is missing, use `mixed`. The profile is `profiles/<name>.json` in this skill's directory, or `.foreman/<name>.json` in the repository.
-3. Rebuild state from GitHub.
+3. Rebuild state from GitHub. Read native blocked-by edges per [plan-to-issues.md](references/plan-to-issues.md); use body text for legacy issues.
+4. Before dispatch, establish the default-branch CI baseline for the epic per [baseline.md](references/baseline.md).
 
 ## Lanes
 
@@ -28,9 +27,9 @@ Pick the cheapest lane that can succeed, and comment the reason in one line.
 
 | Lane | When | Pipeline | Merge gate |
 |---|---|---|---|
-| quick | Mechanical, about one file, docs, config, or a rename. No new behavior. | `builder-quick` and the existing focused check. | You read the diff, and CI is green. |
-| standard | A bounded behavior change in 1–3 modules. | `builder` works test-first. | Diff read, CI green, and every acceptance criterion ticked against evidence. Add a `reviewer` only on a risk trigger. |
-| deep | Ambiguous or cross-cutting work: architecture, persistence, migrations, concurrency, performance, or security. Also any issue that already failed in standard. | `tester` writes failing tests, then `builder-deep`, then `reviewer`, at most one fix pass, a delta recheck, then `verifier`. | Reviewer `pass`, verifier pass, CI green. |
+| quick | Mechanical, about one file; no new behavior. | `builder-quick` and the existing focused check. | Read the diff. |
+| standard | Bounded behavior change in 1–3 modules. | `builder` test-first; `reviewer` on risk triggers. | Read the diff and check every criterion against evidence. |
+| deep | Ambiguous or cross-cutting: architecture, persistence, migrations, concurrency, performance, security, or failed standard work. | `tester` → `builder-deep` → `reviewer` → at most one fix and delta recheck → `verifier`. | Reviewer and verifier pass. |
 | spike | A question to answer before the work can be specified. | A read-only `scout` or `oracle` posts findings, then you write the real issues. | No merge. |
 
 Risk triggers:
@@ -51,7 +50,7 @@ Escalate one lane at a time, giving a reason each time:
 
 On each owner instruction or worker notification, reconcile the run within its original scope, including any owner changes.
 
-1. **Triage.** Every new issue without `needs:owner` needs acceptance criteria. If an issue is too large for one PR, split it. Set its lane and any `ui` or `docs` label, and set `status:ready` once nothing blocks it. If the work is unclear, file a spike issue instead.
+1. **Triage.** Never dispatch the epic itself. For each task without `needs:owner`, require checkable criteria, split anything larger than one PR, and set lane and `ui`/`docs` labels. Set `status:ready` only when unblocked. File a spike for unclear work.
 2. **Dispatch** ready issues whose dependencies are closed and whose **Touches** do not overlap an active issue.
    - Run at most 3 writers and 2 read-only workers at once.
    - Lower both limits when the load average is above twice the core count.
@@ -63,7 +62,7 @@ On each owner instruction or worker notification, reconcile the run within its o
    - reject a finding that fails the guardrails gate;
    - send a small in-scope fix to the same builder: one fix pass, then a delta-only recheck;
    - send anything large or out of scope to a new issue or `needs:owner`.
-6. **Merge** when the gate passes and CI is green:
+6. **Merge** when the lane and CI gates pass (only exact baseline exemptions):
    - `gh pr merge --squash --delete-branch`;
    - close the issue with a one-line evidence comment;
    - stop the issue's workers and release their checkouts with the host's stop verb.
@@ -72,6 +71,8 @@ On each owner instruction or worker notification, reconcile the run within its o
    - no progress: interrupt it, then one steering follow-up;
    - two failures: escalate the lane.
 8. **Owner gates.** Set `needs:owner`, comment the exact question in one line, and keep working on other ready issues.
+
+9. **Verify the epic goal.** Dispatch the final issue as verifier-only at the integrated default-branch SHA (no PR or builder; use an isolated checkout). Close it and the epic only on pass. On failure, record a numbered extend round on the epic, file in-scope gaps as sub-issues, and block verification on those issues using both edge forms. Retry after they close. At most two rounds; then set `needs:owner`. Escalate out-of-scope gaps immediately.
 
 ## Look up
 

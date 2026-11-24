@@ -26,5 +26,16 @@ Add `ui` or `docs` wherever they fit. Keep an expand → migrate → contract se
 ## Steps
 
 1. Show the table of title, lane, and depends-on, and wait for the owner's approval.
-2. Create an epic issue that links the plan. Then create each task issue and add it as a sub-issue of the epic: `gh issue create`, then `gh api repos/<o>/<r>/issues/<epic>/sub_issues -f sub_issue_id=<id>`. Fill in the `Depends on` numbers as you go.
-3. Leave `status:ready` unset; the foreman sets it during triage.
+2. Create an epic linking the plan, then use the issue and edge steps below.
+
+## Issues and edges
+
+1. Use `gh issue create` for each task, in dependency order, with its `Depends on #n` text. Add it to the epic: `gh api repos/<o>/<r>/issues/<epic>/sub_issues -F sub_issue_id=<id>` (numeric REST ID, not issue number).
+2. For every edge, write the native relationship on the blocked issue:
+   ```sh
+   id=$(gh api "repos/$repo/issues/$prerequisite" --jq .id)
+   gh api --method POST "repos/$repo/issues/$blocked/dependencies/blocked_by" -F "issue_id=$id"
+   ```
+3. Leave `status:ready` unset for triage. If an edge write fails, flag the affected issue `needs:owner` and report the missing edge instead of dispatching it.
+
+For triage, read `gh api --paginate "repos/$repo/issues/$issue/dependencies/blocked_by" --jq '.[] | {number, state}'`. Native edges are authoritative when present; if empty or unsupported, read the issue body's `Depends on #n` entries. Other API errors are not evidence that the issue is unblocked.
