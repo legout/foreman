@@ -84,4 +84,16 @@ Edit `.foreman/my-team.json` to match the models available on your host (`pi --l
 
 `init.sh` records the version in `.foreman/version`, and `doctor.sh` run from a project root warns when that project is behind the installed Foreman. The [changelog](CHANGELOG.md) says which releases need step 2.
 
+## Migrating from pi-implementation-orchestrator
+
+Per project:
+
+1. Stop the old run's workers. Push or park anything only on local `main`.
+2. Run `init.sh <repo> <preset>`, then `/factory-init`. It flags the `pi-implementation-orchestrator` block, replaces it with the factory sections, keeps your own sections and `project/agents/*.md`, and asks you whether the Foreman may merge. The old block paused before integration.
+3. A candidate branch still in progress: push it as `issue/<n>-<slug>`, file a landing issue that names the commit and its merge conflicts, then file the plan's remaining tasks with `/to-issues` or by hand. Note the switch in the plan's execution model, and close the old tracker record with links to the new issues.
+4. Leave old backlog issues unlabelled; `/factory-run` triages them with you.
+5. Check that the default-branch CI is green before you dispatch. Deploy-only workflows such as Pages are not a PR gate.
+
+Once the last project has moved, clean up the machine: `pi remove git:github.com/legout/pi-implementation-orchestrator`; delete its prompt copies from `~/.pi/agent/prompts/` (`implement`, `integrate`, `plan`, `release`, `research`, `shape`, `setup-implementation-orchestrator`), because `/implement` otherwise still routes into the old flow; delete the `~/.local/bin/pi-orchestrator-init` link; and remove the `orchestrate-implementation` skill. Your specs, ADRs, plans and `CONTEXT.md` stay as they are.
+
 See the [Foreman skill](skills/foreman/SKILL.md) for lane gates, [host adapters](skills/foreman/references/hosts) for launch details, and the [factory template](factory/AGENTS.md) for permissions and worker rules.

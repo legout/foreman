@@ -65,6 +65,9 @@ EOF
 old=$(cat .foreman/version 2>/dev/null || true)
 echo "$version" > .foreman/version
 echo "labels ready on $repo; profile: $profile; foreman $([ -n "$old" ] && [ "$old" != "$version" ] && echo "$old -> ")$version"
+if grep -qs 'pi-implementation-orchestrator:start' AGENTS.md CLAUDE.md; then
+  echo "found the pi-implementation-orchestrator block: \"factory init\" replaces it (see the README, Migrating from pi-implementation-orchestrator)"
+fi
 if [ "$out" != AGENTS.md ]; then
   echo "next: ask your agent \"factory init\" to merge $out into AGENTS.md and fill its TODOs"
 elif grep -q TODO AGENTS.md; then

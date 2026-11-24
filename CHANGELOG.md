@@ -4,8 +4,16 @@ All notable changes to Foreman. Versions follow [SemVer](https://semver.org/); e
 
 ## Unreleased
 
+## 0.3.0 - 2026-11-24
+
+No re-init needed: the `AGENTS.md` template and labels are unchanged.
+
 ### New
+- Migration path from `pi-implementation-orchestrator`, first used on a real monorepo: `init.sh` flags the old managed block; `/factory-init` replaces it, asks about merge authority and publishing tags, and lands or files a run in progress as issues; the README lists the per-project steps and the machine cleanup.
 - Pi status view: a widget above the editor shows running workers and the plan's next tasks; `/factory-status` opens the epic as dependency layers. Read-only, GitHub plus host CLIs, off in worker sessions. Remote Paseo daemons and MCP-only Paseo are not covered.
+
+### Changed
+- `/factory-init` reads `CONTRIBUTING.md` and per-package test commands, names a multi-suite CI workflow as the gate instead of a local command, and marks deploy-only workflows as not a PR gate.
 
 ## 0.2.0 - 2026-11-24
 
