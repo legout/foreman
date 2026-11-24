@@ -4,6 +4,9 @@ All notable changes to Foreman. Versions follow [SemVer](https://semver.org/); e
 
 ## Unreleased
 
+### New
+- Pi status view: a widget above the editor shows running workers and the plan's next tasks; `/factory-status` opens the epic as dependency layers. Read-only, GitHub plus host CLIs, off in worker sessions. Remote Paseo daemons and MCP-only Paseo are not covered.
+
 ## 0.2.0 - 2026-11-24
 
 First tagged release. Pin it with `FOREMAN_REF=v0.2.0` in the install command.

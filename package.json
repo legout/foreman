@@ -7,7 +7,14 @@
   ],
   "license": "MIT",
   "repository": "github:legout/foreman",
+  "type": "module",
+  "scripts": {
+    "test": "node --test extensions/"
+  },
   "pi": {
+    "extensions": [
+      "./extensions/factory-status/index.ts"
+    ],
     "skills": [
       "./skills"
     ],

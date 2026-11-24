@@ -49,6 +49,8 @@ Open an agent in your project inside Herdr, Paseo, or BB. This session is the Fo
 3. **Accept:** Workers report evidence on GitHub. Foreman checks it against each task’s criteria before merging, with independent review and verification where the lane calls for it. When idle, it yields to worker notifications on Herdr, BB, and agent-scoped Paseo, so you can send more instructions.
 4. **Verify the goal:** Where the epic has a final verification issue, a verifier checks the integrated result. If it fails, Foreman can file the missing in-scope work and retry for up to two rounds, then marks `needs:owner`. Out-of-scope decisions go to the owner immediately.
 
+**Watching a run in Pi:** in a Foreman project, Pi shows a status block above the editor. It lists running workers with role, issue, model and status, issues waiting on review, CI or you, and what comes next. `/factory-status` opens the whole epic as dependency layers. Plan state comes from GitHub; workers come from Herdr (`hc`), Paseo (`paseo` CLI, local daemon) or BB, matched by name (`<role>-<n>`) and by this repo's worktrees. The view is read-only and stays off in worker sessions. Use `/factory-status off|on|refresh|epic <n>` to control it.
+
 Your part during a run: answer issues labelled `needs:owner`. You can message the Foreman session at any time; it picks up new instructions between worker reports.
 
 Foreman does not implement changes itself or release or deploy them. For repeatable project-specific verification, use `project-verification` to write the `verify-*` recipe your verifier should follow.
